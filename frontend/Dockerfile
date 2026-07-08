@@ -4,7 +4,10 @@ WORKDIR /app
 
 # Installer les dépendances npm
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install --verbose
+
+# Vérifier que react-scripts est installé
+RUN ls -la node_modules | grep react-scripts || echo "WARNING: react-scripts not found"
 
 # Copier le code source
 COPY . .

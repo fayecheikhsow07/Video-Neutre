@@ -4,13 +4,13 @@ WORKDIR /app
 
 # Installer les dépendances npm
 COPY package*.json ./
-RUN npm install --legacy-peer-deps || npm install
+RUN npm install --legacy-peer-deps
 
-# Copier le code
+# Copier le code source
 COPY . .
 
 # Exposer le port
 EXPOSE 3000
 
-# Lancer l'application
+# Lancer l'application en mode développement
 CMD ["npm", "start"]

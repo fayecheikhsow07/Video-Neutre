@@ -17,9 +17,10 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
     depends_on:
-      - db
-      - redis
-      - minio
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
     volumes:
       - ./backend:/app
     networks:
@@ -54,7 +55,6 @@ services:
       POSTGRES_DB: video_neutre
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - video-neutre-net
     ports:

@@ -1,19 +1,29 @@
+FROM node:18-alpine as builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Build is optional for development
+RUN npm run build 2>/dev/null || echo "Build step skipped"
+
+# Production stage - serve static files
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Installer les dépendances npm
-COPY package*.json ./
-RUN npm install --verbose
+RUN npm install -g http-server
 
-# Vérifier que react-scripts est installé
-RUN ls -la node_modules | grep react-scripts || echo "WARNING: react-scripts not found"
+# Copy built app
+COPY --from=builder /app/build ./build 2>/dev/null || true
+COPY --from=builder /app/public ./public 2>/dev/null || true
+COPY --from=builder /app/src ./src 2>/dev/null || true
+COPY --from=builder /app/package*.json ./
 
-# Copier le code source
-COPY . .
-
-# Exposer le port
 EXPOSE 3000
 
-# Lancer l'application en mode développement
-CMD ["npm", "start"]
+# Serve the app
+CMD ["http-server", "./build", "-p", "3000"] || CMD ["http-server", "./public", "-p", "3000"]

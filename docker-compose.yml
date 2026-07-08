@@ -22,9 +22,9 @@ services:
       - minio
     volumes:
       - ./backend:/app
-      - /app/node_modules
     networks:
       - video-neutre-net
+    restart: on-failure
 
   # Frontend
   frontend:
@@ -40,9 +40,9 @@ services:
       - api
     volumes:
       - ./frontend:/app
-      - /app/node_modules
     networks:
       - video-neutre-net
+    restart: on-failure
 
   # PostgreSQL Database
   db:
@@ -57,6 +57,9 @@ services:
       - ./backend/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - video-neutre-net
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
 
   # Redis Cache
   redis:
@@ -68,6 +71,7 @@ services:
       - redis_data:/data
     networks:
       - video-neutre-net
+    restart: unless-stopped
 
   # MinIO (S3 Compatible Storage)
   minio:
@@ -84,6 +88,7 @@ services:
       - minio_data:/data
     networks:
       - video-neutre-net
+    restart: unless-stopped
 
 volumes:
   postgres_data:
